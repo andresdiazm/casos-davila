@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatDateDisplay, formatDateTimeDisplay } from '@/lib/dates'
+import { formatCLP } from '@/lib/currency'
 import { getSeguimientoInfo } from '@/lib/tracking'
 import type { CaseDraft } from '@/types/case'
 
@@ -75,6 +76,8 @@ export function CaseDetail() {
     planMejora: caso.planMejora,
     fechaRevision: caso.fechaRevision,
     fechaPlanMejora: caso.fechaPlanMejora,
+    montoSolicitado: caso.montoSolicitado,
+    montoAcordado: caso.montoAcordado,
     responsable: caso.responsable,
     resumenClinico: caso.resumenClinico,
     observaciones: caso.observaciones,
@@ -143,6 +146,8 @@ export function CaseDetail() {
           <Section title="4. Evaluación de brecha">
             <DetailRow label="Brecha identificada" value={<BrechaBadge brecha={caso.brecha} />} />
             <DetailRow label="Fecha de revisión" value={formatDateDisplay(caso.fechaRevision)} />
+            <DetailRow label="Monto solicitado" value={formatCLP(caso.montoSolicitado)} />
+            <DetailRow label="Monto acordado" value={formatCLP(caso.montoAcordado)} />
           </Section>
 
           <Section title="5. Plan de mejora">

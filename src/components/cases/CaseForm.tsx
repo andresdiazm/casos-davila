@@ -26,6 +26,8 @@ export const emptyDraft: CaseDraft = {
   planMejora: '',
   fechaRevision: '',
   fechaPlanMejora: '',
+  montoSolicitado: '',
+  montoAcordado: '',
   responsable: '',
   resumenClinico: '',
   observaciones: '',
@@ -71,6 +73,12 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
     if (!d.responsable) errs.responsable = 'Seleccione un responsable.'
     if (d.brecha === 'si' && !d.planMejora.trim()) {
       errs.planMejora = 'Describa el plan de mejora cuando existe una brecha identificada.'
+    }
+    if (d.montoSolicitado.trim() && (Number.isNaN(Number(d.montoSolicitado)) || Number(d.montoSolicitado) < 0)) {
+      errs.montoSolicitado = 'Ingrese un monto válido.'
+    }
+    if (d.montoAcordado.trim() && (Number.isNaN(Number(d.montoAcordado)) || Number(d.montoAcordado) < 0)) {
+      errs.montoAcordado = 'Ingrese un monto válido.'
     }
     return errs
   }
@@ -254,6 +262,44 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
             </>
           )}
         </div>
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FieldWrapper
+          label="Monto solicitado"
+          htmlFor="montoSolicitado"
+          error={errors.montoSolicitado}
+          hint="Opcional, en pesos chilenos"
+        >
+          <TextInput
+            id="montoSolicitado"
+            type="number"
+            min="0"
+            step="1"
+            value={draft.montoSolicitado}
+            error={errors.montoSolicitado}
+            onChange={(e) => set('montoSolicitado', e.target.value)}
+            placeholder="0"
+          />
+        </FieldWrapper>
+
+        <FieldWrapper
+          label="Monto acordado"
+          htmlFor="montoAcordado"
+          error={errors.montoAcordado}
+          hint="Opcional, en pesos chilenos"
+        >
+          <TextInput
+            id="montoAcordado"
+            type="number"
+            min="0"
+            step="1"
+            value={draft.montoAcordado}
+            error={errors.montoAcordado}
+            onChange={(e) => set('montoAcordado', e.target.value)}
+            placeholder="0"
+          />
+        </FieldWrapper>
       </section>
 
       <div className="flex justify-end gap-3">

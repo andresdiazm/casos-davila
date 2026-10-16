@@ -17,17 +17,21 @@ const FIELD_LABELS: Record<string, string> = {
   planMejora: 'Plan de mejora',
   fechaRevision: 'Fecha de revisión',
   fechaPlanMejora: 'Fecha de plan de mejora',
+  montoSolicitado: 'Monto solicitado',
+  montoAcordado: 'Monto acordado',
   responsable: 'Responsable',
   resumenClinico: 'Resumen clínico',
   observaciones: 'Observaciones',
 }
 
-/** Normaliza registros creados antes de incorporar resumen clínico, observaciones y tareas. */
+/** Normaliza registros creados antes de incorporar resumen clínico, observaciones, tareas y montos. */
 function normalizeCase(record: CaseRecord): CaseRecord {
   return {
     ...record,
     resumenClinico: record.resumenClinico ?? '',
     observaciones: record.observaciones ?? '',
+    montoSolicitado: record.montoSolicitado ?? '',
+    montoAcordado: record.montoAcordado ?? '',
     tareas: record.tareas ?? [],
   }
 }

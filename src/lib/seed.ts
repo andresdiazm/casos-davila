@@ -74,18 +74,25 @@ export async function seedDemoData(): Promise<number> {
       planMejora = 'Plan de mejora en definición junto al equipo clínico responsable del proceso involucrado.'
     }
 
+    const origen = ORIGENES[i % ORIGENES.length]
+    const implicaMonto = origen === 'Mediación o demanda' || origen === 'Reclamo de paciente'
+    const montoSolicitado = implicaMonto ? String(500000 + (i % 10) * 350000) : ''
+    const montoAcordado = implicaMonto && i % 2 === 0 ? String(Math.round(Number(montoSolicitado) * 0.7)) : ''
+
     const draft: CaseDraft = {
       rut: fakeRut(i + 1),
       nombre: NOMBRES[i % NOMBRES.length],
-      origen: ORIGENES[i % ORIGENES.length],
+      origen,
       fechaInicio: isoDaysAgo(diasInicio),
       estado,
       brecha,
       planMejora,
       fechaRevision,
       fechaPlanMejora,
+      montoSolicitado,
+      montoAcordado,
       responsable: RESPONSABLES[i % RESPONSABLES.length],
-      resumenClinico: `Caso originado por ${ORIGENES[i % ORIGENES.length].toLowerCase()}, relacionado con la atención de ${NOMBRES[i % NOMBRES.length]}. En evaluación por el equipo de calidad y seguridad del paciente.`,
+      resumenClinico: `Caso originado por ${origen.toLowerCase()}, relacionado con la atención de ${NOMBRES[i % NOMBRES.length]}. En evaluación por el equipo de calidad y seguridad del paciente.`,
       observaciones: i % 3 === 0 ? 'Pendiente de coordinar reunión con el equipo clínico involucrado.' : '',
     }
     const record = await createCase(draft)
