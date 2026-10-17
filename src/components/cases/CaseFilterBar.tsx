@@ -18,8 +18,8 @@ export function CaseFilterBar({ filters, onChange }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-6">
+    <div className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
         <TextInput
           placeholder="Buscar nombre, RUT o ID"
           value={filters.search}
@@ -64,7 +64,7 @@ export function CaseFilterBar({ filters, onChange }: Props) {
           Limpiar filtros
         </Button>
       </div>
-      <div className="flex flex-wrap items-center gap-4 border-t border-slate-100 pt-3">
+      <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-2">
         <label className="flex items-center gap-2 text-sm text-slate-600">
           Fecha inicio desde
           <TextInput

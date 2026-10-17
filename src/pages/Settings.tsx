@@ -86,8 +86,8 @@ export function Settings() {
   const responsables = catalogs.filter((c) => c.type === 'responsable')
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <CatalogManager
           title="Origen del caso"
           description="Catálogo de orígenes disponibles al registrar un caso."
@@ -104,7 +104,7 @@ export function Settings() {
         />
       </div>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
         <h3 className="mb-1 text-sm font-semibold text-grafito">Respaldo de información</h3>
         <p className="mb-4 text-xs text-slate-500">
           Exporte un respaldo completo en formato JSON o restaure uno previamente generado por este sistema.
@@ -120,7 +120,7 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
         <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-grafito">
           <FlaskConical size={15} /> Datos de demostración
         </h3>
@@ -143,7 +143,7 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
         <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-grafito">
           <Database size={15} /> Almacenamiento local
         </h3>

@@ -30,7 +30,7 @@ export function NewCase() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
         <CaseForm
           submitLabel="Guardar caso"
           showCancelAsClear

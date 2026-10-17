@@ -1,7 +1,7 @@
 import { addTarea, createCase } from '@/lib/casesRepo'
 import { db } from '@/lib/db'
 import { formatearRut } from '@/lib/rut'
-import type { Brecha, CaseDraft, EstadoCasoId } from '@/types/case'
+import type { Brecha, CaseDraft, EstadoCasoId, TipoPaciente } from '@/types/case'
 
 function dvFor(cuerpo: number): string {
   let suma = 0
@@ -53,6 +53,15 @@ const RESPONSABLES = ['Calidad y Seguridad del Paciente', 'Subdirección Médica
 
 const BRECHAS: Brecha[] = ['si', 'no', 'pendiente']
 
+const TIPOS_PACIENTE: TipoPaciente[] = ['hospitalizado', 'ambulatorio', 'mixto', '']
+
+const DIAGNOSTICOS = [
+  'Neumonía adquirida en la comunidad', 'Fractura de cadera', 'Infección del tracto urinario',
+  'Diabetes mellitus descompensada', 'Insuficiencia cardíaca congestiva', 'Apendicitis aguda',
+  'Accidente cerebrovascular isquémico', 'Celulitis de extremidad inferior',
+  'Enfermedad pulmonar obstructiva crónica', 'Colecistitis aguda',
+]
+
 export async function seedDemoData(): Promise<number> {
   const count = 24
   let created = 0
@@ -78,10 +87,15 @@ export async function seedDemoData(): Promise<number> {
     const implicaMonto = origen === 'Mediación o demanda' || origen === 'Reclamo de paciente'
     const montoSolicitado = implicaMonto ? String(500000 + (i % 10) * 350000) : ''
     const montoAcordado = implicaMonto && i % 2 === 0 ? String(Math.round(Number(montoSolicitado) * 0.7)) : ''
+    const tipoPaciente = TIPOS_PACIENTE[i % TIPOS_PACIENTE.length]
+    const cama = tipoPaciente === 'hospitalizado' || tipoPaciente === 'mixto' ? `${200 + i}-${i % 2 === 0 ? 'A' : 'B'}` : ''
 
     const draft: CaseDraft = {
       rut: fakeRut(i + 1),
       nombre: NOMBRES[i % NOMBRES.length],
+      tipoPaciente,
+      cama,
+      diagnosticoPrincipal: DIAGNOSTICOS[i % DIAGNOSTICOS.length],
       origen,
       fechaInicio: isoDaysAgo(diasInicio),
       estado,

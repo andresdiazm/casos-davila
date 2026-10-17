@@ -13,7 +13,7 @@ export function Topbar({ title }: { title: string }) {
   }
 
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-4">
+    <header className="flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-3">
       <h1 className="text-lg font-semibold text-grafito">{title}</h1>
       <div className="flex items-center gap-3">
         <form onSubmit={onSearch} className="relative">
@@ -22,7 +22,7 @@ export function Topbar({ title }: { title: string }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre, RUT o ID..."
-            className="w-64 rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none focus:border-turquesa focus:bg-white focus:ring-2 focus:ring-teal-100"
+            className="w-64 rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-3 text-sm outline-none focus:border-turquesa focus:bg-white focus:ring-2 focus:ring-teal-100"
           />
         </form>
         <Button variant="primary" icon={<Plus size={16} />} onClick={() => navigate('/casos/nuevo')}>

@@ -52,7 +52,7 @@ export function TareasSection({ caseId, tareas, title = 'Tareas' }: TareasSectio
   }
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
+    <section className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-grafito">
         <ListTodo size={16} /> {title}
         {tareas.length > 0 && (

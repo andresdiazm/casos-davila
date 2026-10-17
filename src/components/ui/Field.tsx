@@ -25,7 +25,7 @@ export function FieldWrapper({ label, htmlFor, required, error, hint, children }
 }
 
 const baseInputClasses =
-  'w-full rounded-lg border px-3 py-2 text-sm text-grafito outline-none transition-colors placeholder:text-slate-400 disabled:bg-slate-50 disabled:text-slate-400'
+  'w-full rounded-lg border px-2.5 py-1.5 text-sm text-grafito outline-none transition-colors placeholder:text-slate-400 disabled:bg-slate-50 disabled:text-slate-400'
 
 function borderClasses(error?: string) {
   return error

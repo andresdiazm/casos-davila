@@ -78,8 +78,8 @@ export function Dashboard() {
     .map(([key, value]) => ({ name: monthLabel(key), value }))
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <StatCard label="Total de casos" value={total} icon={<Layers size={20} />} />
         <StatCard label="Casos abiertos" value={abiertos} icon={<FolderOpen size={20} />} />
         <StatCard label="Casos cerrados" value={cerrados} icon={<FolderCheck size={20} />} />
@@ -100,7 +100,7 @@ export function Dashboard() {
           Configuración.
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <ChartCard title="Distribución por estado">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

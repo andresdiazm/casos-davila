@@ -47,7 +47,7 @@ export function CatalogManager({ title, description, type, items, onChanged }: P
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="text-sm font-semibold text-grafito">{title}</h3>
       <p className="mb-3 text-xs text-slate-500">{description}</p>
       <ul className="mb-3 flex flex-col gap-1.5 max-h-64 overflow-y-auto">

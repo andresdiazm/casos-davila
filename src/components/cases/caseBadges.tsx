@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/Badge'
-import type { Brecha, EstadoCasoId, SeguimientoInfo } from '@/types/case'
+import type { Brecha, EstadoCasoId, SeguimientoInfo, TipoPaciente } from '@/types/case'
 
 const ESTADO_LABELS: Record<EstadoCasoId, string> = {
   ingresado: 'Ingresado',
@@ -12,6 +12,16 @@ const ESTADO_LABELS: Record<EstadoCasoId, string> = {
 
 export function estadoLabel(estado: string): string {
   return ESTADO_LABELS[estado as EstadoCasoId] ?? estado
+}
+
+const TIPO_PACIENTE_LABELS: Record<Exclude<TipoPaciente, ''>, string> = {
+  hospitalizado: 'Hospitalizado',
+  ambulatorio: 'Ambulatorio',
+  mixto: 'Mixto',
+}
+
+export function tipoPacienteLabel(tipo: string): string {
+  return TIPO_PACIENTE_LABELS[tipo as Exclude<TipoPaciente, ''>] ?? ''
 }
 
 export function EstadoBadge({ estado }: { estado: string }) {

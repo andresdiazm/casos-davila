@@ -26,6 +26,7 @@ const COLUMNS: Column[] = [
   { id: 'caseNumber', label: 'ID', defaultVisible: true, value: (c) => c.caseNumber },
   { id: 'rut', label: 'RUT', defaultVisible: true, value: (c) => c.rut },
   { id: 'nombre', label: 'Nombre', defaultVisible: true, value: (c) => c.nombre },
+  { id: 'diagnosticoPrincipal', label: 'Diagnóstico', defaultVisible: true, value: (c) => c.diagnosticoPrincipal },
   { id: 'origen', label: 'Origen', defaultVisible: true, value: (c) => c.origen },
   {
     id: 'fechaInicio',
@@ -146,7 +147,7 @@ export function CasesList() {
   const activeColumns = COLUMNS.filter((c) => visibleCols.has(c.id))
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <CaseFilterBar filters={filters} onChange={setFilters} />
 
       <div className="flex items-center justify-between">
@@ -202,7 +203,7 @@ export function CasesList() {
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {activeColumns.map((col) => (
-                    <th key={col.id} className="whitespace-nowrap px-4 py-3">
+                    <th key={col.id} className="whitespace-nowrap px-3 py-2">
                       <button
                         onClick={() => toggleSort(col.id)}
                         className="flex items-center gap-1 hover:text-grafito"
@@ -232,7 +233,7 @@ export function CasesList() {
                       )}
                     >
                       {activeColumns.map((col) => (
-                        <td key={col.id} className="whitespace-nowrap px-4 py-3 text-grafito">
+                        <td key={col.id} className="whitespace-nowrap px-3 py-2 text-grafito">
                           {col.render ? col.render(c) : col.value(c) || '—'}
                         </td>
                       ))}

@@ -22,7 +22,7 @@ export function AppLayout() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar title={titleForPath(location.pathname)} />
-        <main className="flex-1 overflow-y-auto px-6 py-6">
+        <main className="flex-1 overflow-y-auto px-5 py-4">
           <Outlet />
         </main>
       </div>

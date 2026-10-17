@@ -1,5 +1,7 @@
 export type Brecha = 'pendiente' | 'si' | 'no'
 
+export type TipoPaciente = '' | 'hospitalizado' | 'ambulatorio' | 'mixto'
+
 export type EstadoCasoId =
   | 'ingresado'
   | 'en_revision'
@@ -31,6 +33,9 @@ export interface CaseRecord {
   caseNumber: string
   rut: string
   nombre: string
+  tipoPaciente: TipoPaciente
+  cama: string
+  diagnosticoPrincipal: string
   origen: string
   fechaInicio: string
   estado: EstadoCasoId

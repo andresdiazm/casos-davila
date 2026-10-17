@@ -21,7 +21,7 @@ function GroupTable({ config, items }: { config: GroupConfig; items: CaseRecord[
   const navigate = useNavigate()
   return (
     <section className="rounded-xl border border-slate-200 bg-white">
-      <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
         <div className={`rounded-full p-2 ${config.tone}`}>{config.icon}</div>
         <div>
           <h3 className="text-sm font-semibold text-grafito">
@@ -31,18 +31,18 @@ function GroupTable({ config, items }: { config: GroupConfig; items: CaseRecord[
         </div>
       </div>
       {items.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-slate-400">No hay casos en esta categoría.</p>
+        <p className="px-4 py-5 text-sm text-slate-400">No hay casos en esta categoría.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
-                <th className="px-5 py-2">ID</th>
-                <th className="px-5 py-2">Nombre</th>
-                <th className="px-5 py-2">Fecha clave</th>
-                <th className="px-5 py-2">Estado</th>
-                <th className="px-5 py-2">Brecha</th>
-                <th className="px-5 py-2">Responsable</th>
+                <th className="px-4 py-1.5">ID</th>
+                <th className="px-4 py-1.5">Nombre</th>
+                <th className="px-4 py-1.5">Fecha clave</th>
+                <th className="px-4 py-1.5">Estado</th>
+                <th className="px-4 py-1.5">Brecha</th>
+                <th className="px-4 py-1.5">Responsable</th>
               </tr>
             </thead>
             <tbody>
@@ -52,16 +52,16 @@ function GroupTable({ config, items }: { config: GroupConfig; items: CaseRecord[
                   onClick={() => navigate(`/casos/${c.id}`)}
                   className="cursor-pointer border-t border-slate-100 hover:bg-teal-50/40"
                 >
-                  <td className="px-5 py-2.5 font-medium text-grafito">{c.caseNumber}</td>
-                  <td className="px-5 py-2.5">{c.nombre}</td>
-                  <td className="px-5 py-2.5">{formatDateDisplay(c[config.dateField])}</td>
-                  <td className="px-5 py-2.5">
+                  <td className="px-4 py-2 font-medium text-grafito">{c.caseNumber}</td>
+                  <td className="px-4 py-2">{c.nombre}</td>
+                  <td className="px-4 py-2">{formatDateDisplay(c[config.dateField])}</td>
+                  <td className="px-4 py-2">
                     <EstadoBadge estado={c.estado} />
                   </td>
-                  <td className="px-5 py-2.5">
+                  <td className="px-4 py-2">
                     <BrechaBadge brecha={c.brecha} />
                   </td>
-                  <td className="px-5 py-2.5">{c.responsable}</td>
+                  <td className="px-4 py-2">{c.responsable}</td>
                 </tr>
               ))}
             </tbody>
@@ -129,7 +129,7 @@ export function Seguimiento() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {grouped.map(({ config, items }) => (
         <GroupTable key={config.key} config={config} items={items} />
       ))}

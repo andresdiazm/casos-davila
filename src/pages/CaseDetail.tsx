@@ -6,7 +6,7 @@ import { useToast } from '@/context/ToastContext'
 import { CaseForm } from '@/components/cases/CaseForm'
 import { DetailRow, Section } from '@/components/cases/DetailRow'
 import { TareasSection } from '@/components/cases/TareasSection'
-import { EstadoBadge, BrechaBadge, SeguimientoBadges } from '@/components/cases/caseBadges'
+import { EstadoBadge, BrechaBadge, SeguimientoBadges, tipoPacienteLabel } from '@/components/cases/caseBadges'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -69,6 +69,9 @@ export function CaseDetail() {
   const draft: CaseDraft = {
     rut: caso.rut,
     nombre: caso.nombre,
+    tipoPaciente: caso.tipoPaciente,
+    cama: caso.cama,
+    diagnosticoPrincipal: caso.diagnosticoPrincipal,
     origen: caso.origen,
     fechaInicio: caso.fechaInicio,
     estado: caso.estado,
@@ -84,7 +87,7 @@ export function CaseDetail() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className="mx-auto flex max-w-4xl flex-col gap-3">
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate('/casos')}
@@ -120,15 +123,20 @@ export function CaseDetail() {
       </div>
 
       {editing ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-6">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
           <CaseForm initial={draft} submitLabel="Guardar cambios" onSubmit={handleSubmit} onCancel={() => setEditing(false)} />
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <Section title="1. Identificación">
             <DetailRow label="ID de caso" value={caso.caseNumber} />
             <DetailRow label="RUT" value={caso.rut} />
             <DetailRow label="Nombre" value={caso.nombre} />
+            <DetailRow label="Tipo de paciente" value={tipoPacienteLabel(caso.tipoPaciente)} />
+            {(caso.tipoPaciente === 'hospitalizado' || caso.tipoPaciente === 'mixto') && (
+              <DetailRow label="Cama" value={caso.cama} />
+            )}
+            <DetailRow label="Diagnóstico principal" value={caso.diagnosticoPrincipal} />
             <DetailRow label="Creado" value={formatDateTimeDisplay(caso.createdAt)} />
             <DetailRow label="Última modificación" value={formatDateTimeDisplay(caso.updatedAt)} />
           </Section>
@@ -138,7 +146,7 @@ export function CaseDetail() {
             <DetailRow label="Fecha de inicio" value={formatDateDisplay(caso.fechaInicio)} />
           </Section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <section className="rounded-xl border border-slate-200 bg-white p-4">
             <h3 className="mb-2 text-sm font-semibold text-grafito">3. Resumen clínico</h3>
             <p className="whitespace-pre-wrap text-sm text-grafito">{caso.resumenClinico || '—'}</p>
           </section>
@@ -178,7 +186,7 @@ export function CaseDetail() {
 
           <TareasSection title="6. Tareas" caseId={caso.id} tareas={caso.tareas} />
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <section className="rounded-xl border border-slate-200 bg-white p-4">
             <h3 className="mb-2 text-sm font-semibold text-grafito">7. Observaciones</h3>
             <p className="whitespace-pre-wrap text-sm text-grafito">{caso.observaciones || '—'}</p>
           </section>
@@ -191,7 +199,7 @@ export function CaseDetail() {
             </div>
           </Section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <section className="rounded-xl border border-slate-200 bg-white p-4">
             <h3 className="mb-3 text-sm font-semibold text-grafito">9. Historial de modificaciones</h3>
             {caso.history.length === 0 ? (
               <p className="text-sm text-slate-400">Sin movimientos registrados.</p>

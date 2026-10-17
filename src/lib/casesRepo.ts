@@ -10,6 +10,9 @@ function uuid(): string {
 const FIELD_LABELS: Record<string, string> = {
   nombre: 'Nombre',
   rut: 'RUT',
+  tipoPaciente: 'Tipo de paciente',
+  cama: 'Cama',
+  diagnosticoPrincipal: 'Diagnóstico principal',
   origen: 'Origen',
   fechaInicio: 'Fecha de inicio',
   estado: 'Estado',
@@ -24,7 +27,7 @@ const FIELD_LABELS: Record<string, string> = {
   observaciones: 'Observaciones',
 }
 
-/** Normaliza registros creados antes de incorporar resumen clínico, observaciones, tareas y montos. */
+/** Normaliza registros creados antes de incorporar resumen clínico, observaciones, tareas, montos y tipo de paciente. */
 function normalizeCase(record: CaseRecord): CaseRecord {
   return {
     ...record,
@@ -32,6 +35,9 @@ function normalizeCase(record: CaseRecord): CaseRecord {
     observaciones: record.observaciones ?? '',
     montoSolicitado: record.montoSolicitado ?? '',
     montoAcordado: record.montoAcordado ?? '',
+    tipoPaciente: record.tipoPaciente ?? '',
+    cama: record.cama ?? '',
+    diagnosticoPrincipal: record.diagnosticoPrincipal ?? '',
     tareas: record.tareas ?? [],
   }
 }

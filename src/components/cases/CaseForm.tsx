@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { useCatalog } from '@/context/CasesContext'
 import { formatearRut, validarRut } from '@/lib/rut'
 import { todayISO } from '@/lib/dates'
-import type { Brecha, CaseDraft, EstadoCasoId } from '@/types/case'
+import type { Brecha, CaseDraft, EstadoCasoId, TipoPaciente } from '@/types/case'
 
 const ESTADO_OPTIONS: Array<{ id: EstadoCasoId; label: string }> = [
   { id: 'ingresado', label: 'Ingresado' },
@@ -19,6 +19,9 @@ const ESTADO_OPTIONS: Array<{ id: EstadoCasoId; label: string }> = [
 export const emptyDraft: CaseDraft = {
   rut: '',
   nombre: '',
+  tipoPaciente: '',
+  cama: '',
+  diagnosticoPrincipal: '',
   origen: '',
   fechaInicio: todayISO(),
   estado: 'ingresado',
@@ -57,6 +60,9 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
       if (key === 'brecha' && value !== 'si') {
         next.planMejora = ''
         next.fechaPlanMejora = ''
+      }
+      if (key === 'tipoPaciente' && value !== 'hospitalizado' && value !== 'mixto') {
+        next.cama = ''
       }
       return next
     })
@@ -125,6 +131,39 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
             error={errors.nombre}
             onChange={(e) => set('nombre', e.target.value)}
             placeholder="Nombre y apellidos del paciente"
+          />
+        </FieldWrapper>
+
+        <FieldWrapper label="Tipo de paciente" htmlFor="tipoPaciente" hint="Opcional">
+          <SelectInput
+            id="tipoPaciente"
+            value={draft.tipoPaciente}
+            onChange={(e) => set('tipoPaciente', e.target.value as TipoPaciente)}
+          >
+            <option value="">Seleccione...</option>
+            <option value="hospitalizado">Hospitalizado</option>
+            <option value="ambulatorio">Ambulatorio</option>
+            <option value="mixto">Mixto</option>
+          </SelectInput>
+        </FieldWrapper>
+
+        {(draft.tipoPaciente === 'hospitalizado' || draft.tipoPaciente === 'mixto') && (
+          <FieldWrapper label="Cama" htmlFor="cama" hint="Opcional">
+            <TextInput
+              id="cama"
+              value={draft.cama}
+              onChange={(e) => set('cama', e.target.value)}
+              placeholder="Ej: 304-B"
+            />
+          </FieldWrapper>
+        )}
+
+        <FieldWrapper label="Diagnóstico principal" htmlFor="diagnosticoPrincipal" hint="Opcional">
+          <TextInput
+            id="diagnosticoPrincipal"
+            value={draft.diagnosticoPrincipal}
+            onChange={(e) => set('diagnosticoPrincipal', e.target.value)}
+            placeholder="Ej: Neumonía adquirida en la comunidad"
           />
         </FieldWrapper>
 

@@ -16,8 +16,8 @@ const toneClasses = {
 
 export function StatCard({ label, value, icon, tone = 'default' }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4">
-      <div className={clsx('flex h-11 w-11 shrink-0 items-center justify-center rounded-lg', toneClasses[tone])}>
+    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3">
+      <div className={clsx('flex h-10 w-10 shrink-0 items-center justify-center rounded-lg', toneClasses[tone])}>
         {icon}
       </div>
       <div>
