@@ -3,7 +3,6 @@ import type { FormEvent } from 'react'
 import { FieldWrapper, SelectInput, TextArea, TextInput } from '@/components/ui/Field'
 import { Button } from '@/components/ui/Button'
 import { useCatalog } from '@/context/CasesContext'
-import { formatearRut, validarRut } from '@/lib/rut'
 import { todayISO } from '@/lib/dates'
 import type { Brecha, CaseDraft, EstadoCasoId, TipoPaciente } from '@/types/case'
 
@@ -71,7 +70,6 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
   function validate(d: CaseDraft): Errors {
     const errs: Errors = {}
     if (!d.rut.trim()) errs.rut = 'El RUT es obligatorio.'
-    else if (!validarRut(d.rut)) errs.rut = 'El RUT ingresado no es válido (verifique el dígito verificador).'
     if (!d.nombre.trim()) errs.nombre = 'El nombre es obligatorio.'
     if (!d.origen) errs.origen = 'Seleccione el origen del caso.'
     if (!d.fechaInicio) errs.fechaInicio = 'La fecha de inicio es obligatoria.'
@@ -91,13 +89,12 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    const normalized = { ...draft, rut: draft.rut.trim() ? formatearRut(draft.rut) : draft.rut }
-    const errs = validate(normalized)
+    const errs = validate(draft)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
     setSubmitting(true)
     try {
-      await onSubmit(normalized)
+      await onSubmit(draft)
     } finally {
       setSubmitting(false)
     }
@@ -111,15 +108,12 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FieldWrapper label="RUT" htmlFor="rut" required error={errors.rut} hint="Formato: 12.345.678-5">
+        <FieldWrapper label="RUT" htmlFor="rut" required error={errors.rut}>
           <TextInput
             id="rut"
             value={draft.rut}
             error={errors.rut}
             onChange={(e) => set('rut', e.target.value)}
-            onBlur={(e) => {
-              if (e.target.value.trim()) set('rut', formatearRut(e.target.value))
-            }}
             placeholder="12.345.678-5"
           />
         </FieldWrapper>
