@@ -40,6 +40,7 @@ export interface CaseRecord {
   fechaInicio: string
   estado: EstadoCasoId
   brecha: Brecha
+  descripcionBrecha: string
   planMejora: string
   fechaRevision: string
   fechaPlanMejora: string

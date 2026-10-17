@@ -25,6 +25,7 @@ export const emptyDraft: CaseDraft = {
   fechaInicio: todayISO(),
   estado: 'ingresado',
   brecha: 'pendiente',
+  descripcionBrecha: '',
   planMejora: '',
   fechaRevision: '',
   fechaPlanMejora: '',
@@ -57,6 +58,7 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
     setDraft((prev) => {
       const next = { ...prev, [key]: value }
       if (key === 'brecha' && value !== 'si') {
+        next.descripcionBrecha = ''
         next.planMejora = ''
         next.fechaPlanMejora = ''
       }
@@ -267,6 +269,20 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
 
           {draft.brecha === 'si' && (
             <>
+              <FieldWrapper
+                label="Descripción de la brecha"
+                htmlFor="descripcionBrecha"
+                hint="Describa en qué consiste la brecha identificada"
+              >
+                <TextArea
+                  id="descripcionBrecha"
+                  rows={3}
+                  value={draft.descripcionBrecha}
+                  onChange={(e) => set('descripcionBrecha', e.target.value)}
+                  className="sm:col-span-2"
+                />
+              </FieldWrapper>
+
               <FieldWrapper label="Fecha comprometida del plan de mejora" htmlFor="fechaPlanMejora">
                 <TextInput
                   id="fechaPlanMejora"

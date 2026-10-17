@@ -77,10 +77,12 @@ export async function seedDemoData(): Promise<number> {
     }
     let fechaPlanMejora = ''
     let planMejora = ''
+    let descripcionBrecha = ''
     if (brecha === 'si') {
       const offset = (i % 9) - 4
       fechaPlanMejora = offset < 0 ? isoDaysAgo(-offset) : isoDaysFromNow(offset)
       planMejora = 'Plan de mejora en definición junto al equipo clínico responsable del proceso involucrado.'
+      descripcionBrecha = 'Brecha identificada en el proceso asistencial asociado al caso, pendiente de caracterización detallada por el equipo clínico.'
     }
 
     const origen = ORIGENES[i % ORIGENES.length]
@@ -100,6 +102,7 @@ export async function seedDemoData(): Promise<number> {
       fechaInicio: isoDaysAgo(diasInicio),
       estado,
       brecha,
+      descripcionBrecha,
       planMejora,
       fechaRevision,
       fechaPlanMejora,

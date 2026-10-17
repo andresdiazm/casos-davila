@@ -76,6 +76,7 @@ export function CaseDetail() {
     fechaInicio: caso.fechaInicio,
     estado: caso.estado,
     brecha: caso.brecha,
+    descripcionBrecha: caso.descripcionBrecha,
     planMejora: caso.planMejora,
     fechaRevision: caso.fechaRevision,
     fechaPlanMejora: caso.fechaPlanMejora,
@@ -156,6 +157,14 @@ export function CaseDetail() {
             <DetailRow label="Fecha de revisión" value={formatDateDisplay(caso.fechaRevision)} />
             <DetailRow label="Monto solicitado" value={formatCLP(caso.montoSolicitado)} />
             <DetailRow label="Monto acordado" value={formatCLP(caso.montoAcordado)} />
+            {caso.brecha === 'si' && (
+              <div className="col-span-full py-1.5">
+                <dt className="mb-0.5 text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Descripción de la brecha
+                </dt>
+                <dd className="whitespace-pre-wrap text-sm text-grafito">{caso.descripcionBrecha || '—'}</dd>
+              </div>
+            )}
           </Section>
 
           <Section title="5. Plan de mejora">
