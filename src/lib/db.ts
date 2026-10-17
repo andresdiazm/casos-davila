@@ -24,10 +24,16 @@ const ORIGENES_BASE = [
 
 const RESPONSABLES_BASE = ['Calidad y Seguridad del Paciente', 'Subdirección Médica', 'Enfermería Supervisión']
 
+export interface StoredHandle {
+  key: string
+  handle: FileSystemDirectoryHandle
+}
+
 class AppDatabase extends Dexie {
   cases!: Table<CaseRecord, string>
   catalogs!: Table<CatalogItem, string>
   meta!: Table<{ key: string; value: string }, string>
+  handles!: Table<StoredHandle, string>
 
   constructor() {
     super('gestor_casos_riesgo_clinico')
@@ -35,6 +41,12 @@ class AppDatabase extends Dexie {
       cases: 'id, caseNumber, rut, estado, origen, brecha, responsable, deleted, fechaInicio, fechaRevision',
       catalogs: 'id, type, order',
       meta: 'key',
+    })
+    this.version(2).stores({
+      cases: 'id, caseNumber, rut, estado, origen, brecha, responsable, deleted, fechaInicio, fechaRevision',
+      catalogs: 'id, type, order',
+      meta: 'key',
+      handles: 'key',
     })
   }
 }

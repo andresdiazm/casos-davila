@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Database, Download, FlaskConical, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Database, Download, FlaskConical, FolderCog, FolderOpen, Trash2, Upload } from 'lucide-react'
 import { useCases } from '@/context/CasesContext'
 import { useToast } from '@/context/ToastContext'
 import { CatalogManager } from '@/components/settings/CatalogManager'
@@ -11,7 +11,19 @@ import { getAllCases } from '@/lib/casesRepo'
 import { getAllCatalogs } from '@/lib/catalogRepo'
 
 export function Settings() {
-  const { catalogs, refresh, hasDemoData, loadDemoData, removeDemoData } = useCases()
+  const {
+    catalogs,
+    refresh,
+    hasDemoData,
+    loadDemoData,
+    removeDemoData,
+    backupFolder,
+    connectBackupFolder,
+    disconnectBackupFolder,
+    reauthorizeBackupFolder,
+    setBackupAutoSync,
+    syncBackupNow,
+  } = useCases()
   const { notify } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -69,6 +81,15 @@ export function Settings() {
     notify('success', 'Respaldo importado correctamente.')
   }
 
+  async function handleConnectFolder() {
+    try {
+      await connectBackupFolder()
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
+      notify('error', 'No se pudo vincular la carpeta seleccionada.')
+    }
+  }
+
   async function handleLoadDemo() {
     await loadDemoData()
     await loadStorageInfo()
@@ -118,6 +139,71 @@ export function Settings() {
           </Button>
           <input ref={fileInputRef} type="file" accept="application/json" hidden onChange={handleFileSelected} />
         </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-grafito">
+          <FolderCog size={15} /> Carpeta de respaldo local
+        </h3>
+
+        {!backupFolder.supported ? (
+          <p className="text-xs text-slate-500">
+            Este navegador no permite vincular una carpeta del computador para guardar respaldos automáticamente.
+            Use Chrome o Edge para esta función, o siga usando la exportación manual de arriba.
+          </p>
+        ) : !backupFolder.connected ? (
+          <>
+            <p className="mb-4 text-xs text-slate-500">
+              Vincule una carpeta real de este computador para que el sistema guarde ahí una copia actualizada del
+              respaldo cada vez que registre o modifique un caso.
+            </p>
+            <Button variant="secondary" icon={<FolderOpen size={15} />} onClick={handleConnectFolder}>
+              Conectar carpeta
+            </Button>
+          </>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-slate-500">
+              Carpeta vinculada: <span className="font-medium text-grafito">{backupFolder.folderName}</span>
+            </p>
+
+            {backupFolder.permission !== 'granted' && (
+              <div className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-ambar">
+                <AlertTriangle size={14} />
+                <span className="flex-1">
+                  Se perdió el acceso a la carpeta tras recargar la página. Reautorice para seguir guardando ahí.
+                </span>
+                <Button size="sm" variant="secondary" onClick={reauthorizeBackupFolder}>
+                  Reautorizar
+                </Button>
+              </div>
+            )}
+
+            <label className="flex items-center gap-2 text-sm text-slate-600">
+              <input
+                type="checkbox"
+                checked={backupFolder.autoSyncEnabled}
+                onChange={(e) => setBackupAutoSync(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-petroleo focus:ring-turquesa"
+              />
+              Guardar automáticamente en esta carpeta al registrar o modificar casos
+            </label>
+
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant="secondary"
+                icon={<Download size={15} />}
+                onClick={syncBackupNow}
+                disabled={backupFolder.syncing || backupFolder.permission !== 'granted'}
+              >
+                {backupFolder.syncing ? 'Guardando...' : 'Guardar ahora'}
+              </Button>
+              <Button variant="ghost" onClick={disconnectBackupFolder}>
+                Desvincular carpeta
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4">

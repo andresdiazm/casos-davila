@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ensureCatalogsSeeded } from '@/lib/db'
 import {
@@ -15,7 +15,29 @@ import {
 } from '@/lib/casesRepo'
 import { getCatalog } from '@/lib/catalogRepo'
 import { seedDemoData } from '@/lib/seed'
+import {
+  checkPermission,
+  forgetBackupFolder,
+  getAutoSyncEnabled,
+  getStoredFolderHandle,
+  isLocalFolderBackupSupported,
+  pickBackupFolder,
+  requestPermission,
+  scheduleAutoSync,
+  setAutoSyncEnabled as persistAutoSyncEnabled,
+  writeBackupToFolder,
+} from '@/lib/localFolderBackup'
+import { useToast } from '@/context/ToastContext'
 import type { CaseDraft, CaseRecord, CatalogItem } from '@/types/case'
+
+interface BackupFolderState {
+  supported: boolean
+  connected: boolean
+  folderName: string | null
+  permission: PermissionState | null
+  autoSyncEnabled: boolean
+  syncing: boolean
+}
 
 interface CasesContextValue {
   cases: CaseRecord[]
@@ -32,14 +54,26 @@ interface CasesContextValue {
   addTarea: (caseId: string, input: TareaInput) => Promise<void>
   toggleTarea: (caseId: string, tareaId: string) => Promise<void>
   removeTarea: (caseId: string, tareaId: string) => Promise<void>
+  backupFolder: BackupFolderState
+  connectBackupFolder: () => Promise<void>
+  disconnectBackupFolder: () => Promise<void>
+  reauthorizeBackupFolder: () => Promise<void>
+  setBackupAutoSync: (enabled: boolean) => Promise<void>
+  syncBackupNow: () => Promise<void>
 }
 
 const CasesContext = createContext<CasesContextValue | undefined>(undefined)
 
 export function CasesProvider({ children }: { children: ReactNode }) {
+  const { notify } = useToast()
   const [cases, setCases] = useState<CaseRecord[]>([])
   const [catalogs, setCatalogs] = useState<CatalogItem[]>([])
   const [loading, setLoading] = useState(true)
+
+  const [backupHandle, setBackupHandle] = useState<FileSystemDirectoryHandle | null>(null)
+  const [backupPermission, setBackupPermission] = useState<PermissionState | null>(null)
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState(false)
+  const [syncing, setSyncing] = useState(false)
 
   const refresh = useCallback(async () => {
     const [allCases, origenes, responsables, estados] = await Promise.all([
@@ -50,21 +84,101 @@ export function CasesProvider({ children }: { children: ReactNode }) {
     ])
     setCases(allCases)
     setCatalogs([...origenes, ...responsables, ...estados])
-  }, [])
+    if (backupHandle && autoSyncEnabled && backupPermission === 'granted') {
+      scheduleAutoSync(backupHandle, () =>
+        notify('error', 'No se pudo sincronizar el respaldo en la carpeta local.'),
+      )
+    }
+  }, [backupHandle, autoSyncEnabled, backupPermission, notify])
+
+  const refreshRef = useRef(refresh)
+  useEffect(() => {
+    refreshRef.current = refresh
+  }, [refresh])
 
   useEffect(() => {
     let active = true
     ;(async () => {
       await ensureCatalogsSeeded()
       if (!active) return
-      await refresh()
+      await refreshRef.current()
       if (!active) return
       setLoading(false)
     })()
     return () => {
       active = false
     }
-  }, [refresh])
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    ;(async () => {
+      const [handle, enabled] = await Promise.all([getStoredFolderHandle(), getAutoSyncEnabled()])
+      if (!active) return
+      setAutoSyncEnabled(enabled)
+      if (handle) {
+        const perm = await checkPermission(handle)
+        if (!active) return
+        setBackupHandle(handle)
+        setBackupPermission(perm)
+      }
+    })()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const connectBackupFolder = useCallback(async () => {
+    const handle = await pickBackupFolder()
+    setBackupHandle(handle)
+    setBackupPermission('granted')
+    setAutoSyncEnabled(true)
+    await persistAutoSyncEnabled(true)
+    try {
+      await writeBackupToFolder(handle)
+      notify('success', `Carpeta de respaldo vinculada: ${handle.name}`)
+    } catch {
+      notify('error', 'La carpeta se vinculó, pero no se pudo escribir el primer respaldo.')
+    }
+  }, [notify])
+
+  const disconnectBackupFolder = useCallback(async () => {
+    await forgetBackupFolder()
+    await persistAutoSyncEnabled(false)
+    setBackupHandle(null)
+    setBackupPermission(null)
+    setAutoSyncEnabled(false)
+    notify('info', 'Carpeta de respaldo desvinculada.')
+  }, [notify])
+
+  const reauthorizeBackupFolder = useCallback(async () => {
+    if (!backupHandle) return
+    const perm = await requestPermission(backupHandle)
+    setBackupPermission(perm)
+    if (perm === 'granted') {
+      notify('success', 'Acceso a la carpeta de respaldo reautorizado.')
+    } else {
+      notify('error', 'No se concedió acceso a la carpeta seleccionada.')
+    }
+  }, [backupHandle, notify])
+
+  const setBackupAutoSync = useCallback(async (enabled: boolean) => {
+    await persistAutoSyncEnabled(enabled)
+    setAutoSyncEnabled(enabled)
+  }, [])
+
+  const syncBackupNow = useCallback(async () => {
+    if (!backupHandle) return
+    setSyncing(true)
+    try {
+      await writeBackupToFolder(backupHandle)
+      notify('success', 'Respaldo guardado en la carpeta local.')
+    } catch {
+      notify('error', 'No se pudo guardar el respaldo en la carpeta local.')
+    } finally {
+      setSyncing(false)
+    }
+  }, [backupHandle, notify])
 
   const addCase = useCallback(
     async (draft: CaseDraft) => {
@@ -136,6 +250,18 @@ export function CasesProvider({ children }: { children: ReactNode }) {
 
   const hasDemoData = useMemo(() => cases.some((c) => c.isDemo), [cases])
 
+  const backupFolder = useMemo<BackupFolderState>(
+    () => ({
+      supported: isLocalFolderBackupSupported(),
+      connected: backupHandle !== null,
+      folderName: backupHandle?.name ?? null,
+      permission: backupPermission,
+      autoSyncEnabled,
+      syncing,
+    }),
+    [backupHandle, backupPermission, autoSyncEnabled, syncing],
+  )
+
   const value = useMemo<CasesContextValue>(
     () => ({
       cases,
@@ -152,6 +278,12 @@ export function CasesProvider({ children }: { children: ReactNode }) {
       addTarea,
       toggleTarea,
       removeTarea,
+      backupFolder,
+      connectBackupFolder,
+      disconnectBackupFolder,
+      reauthorizeBackupFolder,
+      setBackupAutoSync,
+      syncBackupNow,
     }),
     [
       cases,
@@ -168,6 +300,12 @@ export function CasesProvider({ children }: { children: ReactNode }) {
       addTarea,
       toggleTarea,
       removeTarea,
+      backupFolder,
+      connectBackupFolder,
+      disconnectBackupFolder,
+      reauthorizeBackupFolder,
+      setBackupAutoSync,
+      syncBackupNow,
     ],
   )
 

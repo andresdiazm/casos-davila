@@ -70,3 +70,12 @@ Tailwind CSS v4 via the `@tailwindcss/vite` plugin (no `tailwind.config.js` — 
 ### Backup / export
 
 `src/lib/backup.ts` handles full-database JSON export/import (used by Configuración for respaldo). `src/lib/csv.ts` handles the Excel-compatible CSV export (semicolon-delimited, UTF-8 BOM) from the Casos list, exporting whatever columns/filters/sort are currently active.
+
+### Local folder auto-backup (File System Access API)
+
+`src/lib/localFolderBackup.ts` wraps the File System Access API (`showDirectoryPicker`, `FileSystemDirectoryHandle`) to let the user link a real folder on disk and have `respaldo_casos.json` (built via `buildBackup()`) written there automatically. Chromium-only (Chrome/Edge) — `isLocalFolderBackupSupported()` feature-detects and the Settings UI hides the panel entirely when unsupported, so Firefox/Safari users just keep the manual export/import flow.
+
+- Types aren't in this project's `lib.dom.d.ts` yet — ambient declarations live in `src/types/file-system-access.d.ts`. Extend that file rather than reaching for a `@types/*` package if more of the API is needed later.
+- The `FileSystemDirectoryHandle` is stored directly in IndexedDB (structured-clonable in Chromium) in the `handles` table — this required a Dexie schema version bump (`db.ts` is now at version 2; follow the same pattern — repeat all existing stores plus the new one in a new `.version(N).stores({...})` call — if another store is ever added).
+- Permission can't be silently regained after a reload (`handle.queryPermission`/`requestPermission` need a user gesture) — `CasesContext` surfaces `backupFolder.permission` so Settings can show a "Reautorizar" button when it's not `'granted'`.
+- `CasesContext` owns the connect/disconnect/auto-sync state (`backupFolder`, `connectBackupFolder`, `syncBackupNow`, etc.) and calls `scheduleAutoSync()` (debounced 800ms) at the end of every `refresh()` when auto-sync is on and permission is granted — so any case/catalog/task mutation anywhere in the app re-triggers a write, not just actions taken from the Settings page.
