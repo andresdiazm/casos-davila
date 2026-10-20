@@ -29,6 +29,12 @@ const COLUMNS: Column[] = [
   { id: 'diagnosticoPrincipal', label: 'Diagnóstico', defaultVisible: true, value: (c) => c.diagnosticoPrincipal },
   { id: 'origen', label: 'Origen', defaultVisible: true, value: (c) => c.origen },
   {
+    id: 'servicioInvolucrado',
+    label: 'Servicio',
+    defaultVisible: true,
+    value: (c) => c.servicioInvolucrado,
+  },
+  {
     id: 'fechaInicio',
     label: 'Fecha inicio',
     defaultVisible: true,
