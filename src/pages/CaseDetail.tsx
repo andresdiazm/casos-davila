@@ -72,6 +72,7 @@ export function CaseDetail() {
     tipoPaciente: caso.tipoPaciente,
     cama: caso.cama,
     diagnosticoPrincipal: caso.diagnosticoPrincipal,
+    servicioInvolucrado: caso.servicioInvolucrado,
     origen: caso.origen,
     fechaInicio: caso.fechaInicio,
     estado: caso.estado,
@@ -138,6 +139,7 @@ export function CaseDetail() {
               <DetailRow label="Cama" value={caso.cama} />
             )}
             <DetailRow label="Diagnóstico principal" value={caso.diagnosticoPrincipal} />
+            <DetailRow label="Servicio involucrado" value={caso.servicioInvolucrado} />
             <DetailRow label="Creado" value={formatDateTimeDisplay(caso.createdAt)} />
             <DetailRow label="Última modificación" value={formatDateTimeDisplay(caso.updatedAt)} />
           </Section>

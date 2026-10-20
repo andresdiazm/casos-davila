@@ -62,6 +62,8 @@ const DIAGNOSTICOS = [
   'Enfermedad pulmonar obstructiva crónica', 'Colecistitis aguda',
 ]
 
+const SERVICIOS = ['Urgencia', 'Pabellón', 'Maternidad', 'UPC']
+
 export async function seedDemoData(): Promise<number> {
   const count = 24
   let created = 0
@@ -98,6 +100,7 @@ export async function seedDemoData(): Promise<number> {
       tipoPaciente,
       cama,
       diagnosticoPrincipal: DIAGNOSTICOS[i % DIAGNOSTICOS.length],
+      servicioInvolucrado: SERVICIOS[i % SERVICIOS.length],
       origen,
       fechaInicio: isoDaysAgo(diasInicio),
       estado,

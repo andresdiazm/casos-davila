@@ -24,6 +24,8 @@ const ORIGENES_BASE = [
 
 const RESPONSABLES_BASE = ['Calidad y Seguridad del Paciente', 'Subdirección Médica', 'Enfermería Supervisión']
 
+const SERVICIOS_BASE = ['Urgencia', 'Pabellón', 'Maternidad', 'UPC']
+
 export interface StoredHandle {
   key: string
   handle: FileSystemDirectoryHandle
@@ -55,36 +57,52 @@ export const db = new AppDatabase()
 
 let seedPromise: Promise<void> | null = null
 
+/** Siembra un catálogo solo si aún no tiene valores, para que los catálogos agregados en
+ * versiones posteriores (p. ej. "servicio") también se creen en bases de datos existentes. */
+async function seedCatalogTypeIfEmpty(items: CatalogItem[]): Promise<void> {
+  if (items.length === 0) return
+  const type = items[0].type
+  const count = await db.catalogs.where('type').equals(type).count()
+  if (count > 0) return
+  await db.catalogs.bulkAdd(items)
+}
+
 export function ensureCatalogsSeeded(): Promise<void> {
   if (!seedPromise) {
     seedPromise = (async () => {
-      const count = await db.catalogs.count()
-      if (count > 0) return
-      const items: CatalogItem[] = []
-      ESTADOS_BASE.forEach((e) => {
-        items.push({ id: e.id, type: 'estado', label: e.label, active: true, order: e.order, builtIn: true })
-      })
-      ORIGENES_BASE.forEach((label, idx) => {
-        items.push({
+      await seedCatalogTypeIfEmpty(
+        ESTADOS_BASE.map((e) => ({ id: e.id, type: 'estado', label: e.label, active: true, order: e.order, builtIn: true })),
+      )
+      await seedCatalogTypeIfEmpty(
+        ORIGENES_BASE.map((label, idx) => ({
           id: `origen_${idx}`,
           type: 'origen',
           label,
           active: true,
           order: idx,
           builtIn: true,
-        })
-      })
-      RESPONSABLES_BASE.forEach((label, idx) => {
-        items.push({
+        })),
+      )
+      await seedCatalogTypeIfEmpty(
+        RESPONSABLES_BASE.map((label, idx) => ({
           id: `responsable_${idx}`,
           type: 'responsable',
           label,
           active: true,
           order: idx,
           builtIn: false,
-        })
-      })
-      await db.catalogs.bulkAdd(items)
+        })),
+      )
+      await seedCatalogTypeIfEmpty(
+        SERVICIOS_BASE.map((label, idx) => ({
+          id: `servicio_${idx}`,
+          type: 'servicio',
+          label,
+          active: true,
+          order: idx,
+          builtIn: false,
+        })),
+      )
     })()
   }
   return seedPromise

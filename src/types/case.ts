@@ -36,6 +36,7 @@ export interface CaseRecord {
   tipoPaciente: TipoPaciente
   cama: string
   diagnosticoPrincipal: string
+  servicioInvolucrado: string
   origen: string
   fechaInicio: string
   estado: EstadoCasoId
@@ -62,7 +63,7 @@ export type CaseDraft = Omit<
   'id' | 'caseNumber' | 'deleted' | 'isDemo' | 'createdAt' | 'updatedAt' | 'history' | 'tareas'
 >
 
-export type CatalogType = 'origen' | 'responsable' | 'estado'
+export type CatalogType = 'origen' | 'responsable' | 'estado' | 'servicio'
 
 export interface CatalogItem {
   id: string

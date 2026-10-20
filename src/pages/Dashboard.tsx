@@ -3,6 +3,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  Legend,
   Line,
   LineChart,
   Pie,
@@ -53,12 +54,20 @@ export function Dashboard() {
     }, {}),
   ).map(([estado, value]) => ({ name: estadoLabel(estado), value }))
 
-  const porOrigen = Object.entries(
-    cases.reduce<Record<string, number>>((acc, c) => {
-      acc[c.origen] = (acc[c.origen] ?? 0) + 1
+  const origenesPresentes = Array.from(new Set(cases.map((c) => c.origen || 'Sin especificar')))
+
+  const porServicioOrigen = Object.entries(
+    cases.reduce<Record<string, Record<string, number>>>((acc, c) => {
+      const servicio = c.servicioInvolucrado || 'Sin especificar'
+      const origen = c.origen || 'Sin especificar'
+      acc[servicio] = acc[servicio] ?? {}
+      acc[servicio][origen] = (acc[servicio][origen] ?? 0) + 1
       return acc
     }, {}),
-  ).map(([name, value]) => ({ name, value }))
+  ).map(([servicio, counts]) => ({
+    servicio,
+    ...Object.fromEntries(origenesPresentes.map((origen) => [origen, counts[origen] ?? 0])),
+  }))
 
   const porResponsable = Object.entries(
     cases.reduce<Record<string, number>>((acc, c) => {
@@ -114,14 +123,17 @@ export function Dashboard() {
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="Distribución por origen">
+          <ChartCard title="Casos por servicio">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={porOrigen} layout="vertical" margin={{ left: 24 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 11 }} />
+              <BarChart data={porServicioOrigen} margin={{ bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="servicio" tick={{ fontSize: 11 }} />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="value" fill="var(--color-turquesa)" radius={[0, 4, 4, 0]} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {origenesPresentes.map((origen, idx) => (
+                  <Bar key={origen} dataKey={origen} stackId="servicio" fill={CHART_COLORS[idx % CHART_COLORS.length]} />
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

@@ -105,6 +105,7 @@ export function Settings() {
 
   const origenes = catalogs.filter((c) => c.type === 'origen')
   const responsables = catalogs.filter((c) => c.type === 'responsable')
+  const servicios = catalogs.filter((c) => c.type === 'servicio')
 
   return (
     <div className="flex flex-col gap-4">
@@ -121,6 +122,13 @@ export function Settings() {
           description="Personas o unidades responsables que pueden asignarse a un caso."
           type="responsable"
           items={responsables}
+          onChanged={refresh}
+        />
+        <CatalogManager
+          title="Servicio involucrado"
+          description="Servicios o unidades clínicas disponibles al registrar un caso."
+          type="servicio"
+          items={servicios}
           onChanged={refresh}
         />
       </div>

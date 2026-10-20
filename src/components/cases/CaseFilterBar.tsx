@@ -12,6 +12,7 @@ interface Props {
 export function CaseFilterBar({ filters, onChange }: Props) {
   const origenes = useCatalog('origen')
   const responsables = useCatalog('responsable')
+  const servicios = useCatalog('servicio')
 
   function set<K extends keyof CaseFilters>(key: K, value: CaseFilters[K]) {
     onChange({ ...filters, [key]: value })
@@ -19,7 +20,7 @@ export function CaseFilterBar({ filters, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-7">
         <TextInput
           placeholder="Buscar nombre, RUT o ID"
           value={filters.search}
@@ -30,6 +31,14 @@ export function CaseFilterBar({ filters, onChange }: Props) {
           {origenes.map((o) => (
             <option key={o.id} value={o.label}>
               {o.label}
+            </option>
+          ))}
+        </SelectInput>
+        <SelectInput value={filters.servicio} onChange={(e) => set('servicio', e.target.value)}>
+          <option value="">Servicio: Todos</option>
+          {servicios.map((s) => (
+            <option key={s.id} value={s.label}>
+              {s.label}
             </option>
           ))}
         </SelectInput>

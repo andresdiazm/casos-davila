@@ -37,7 +37,7 @@ The app deploys to two targets from the same `main` branch, both triggered autom
 IndexedDB (Dexie) <-> src/lib/*Repo.ts (CRUD) <-> CasesContext (global state) <-> pages/components
 ```
 
-- `src/lib/db.ts` — Dexie database definition (`cases`, `catalogs`, `meta` tables) and one-time catalog seeding (`ensureCatalogsSeeded`) for the built-in Origen/Estado/Responsable values.
+- `src/lib/db.ts` — Dexie database definition (`cases`, `catalogs`, `meta` tables) and catalog seeding (`ensureCatalogsSeeded`) for the built-in Origen/Estado/Responsable/Servicio values. Seeding is per-catalog-type (`seedCatalogTypeIfEmpty`, keyed off `db.catalogs.where('type').equals(...)`), not a single "is the whole table empty" check — so adding a brand-new catalog type later and listing it here will also backfill it into databases that already have other catalogs seeded, not just fresh ones.
 - `src/lib/casesRepo.ts` — all case CRUD, soft delete/restore, duplicate detection, task (tarea) sub-CRUD, and the auto-generated audit history. `updateCase` diffs the changed fields against the stored record and appends `HistoryEntry` rows automatically — don't write case field updates directly through `db.cases.put`; always go through this repo so history stays consistent.
 - `src/lib/catalogRepo.ts` — CRUD for the configurable catalogs (origen/responsable; estado is fixed in code, not editable via UI yet).
 - `src/context/CasesContext.tsx` — the single source of truth for cases + catalogs in the UI. Every mutation (add/edit/remove/tasks/demo data) calls the repo then `refresh()`s the whole in-memory list; there's no fine-grained cache invalidation. `useCatalog(type)` is the hook for reading active catalog values in forms/filters.

@@ -28,7 +28,7 @@ import {
   writeBackupToFolder,
 } from '@/lib/localFolderBackup'
 import { useToast } from '@/context/ToastContext'
-import type { CaseDraft, CaseRecord, CatalogItem } from '@/types/case'
+import type { CaseDraft, CaseRecord, CatalogItem, CatalogType } from '@/types/case'
 
 interface BackupFolderState {
   supported: boolean
@@ -76,14 +76,15 @@ export function CasesProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false)
 
   const refresh = useCallback(async () => {
-    const [allCases, origenes, responsables, estados] = await Promise.all([
+    const [allCases, origenes, responsables, estados, servicios] = await Promise.all([
       getAllCases(),
       getCatalog('origen'),
       getCatalog('responsable'),
       getCatalog('estado'),
+      getCatalog('servicio'),
     ])
     setCases(allCases)
-    setCatalogs([...origenes, ...responsables, ...estados])
+    setCatalogs([...origenes, ...responsables, ...estados, ...servicios])
     if (backupHandle && autoSyncEnabled && backupPermission === 'granted') {
       scheduleAutoSync(backupHandle, () =>
         notify('error', 'No se pudo sincronizar el respaldo en la carpeta local.'),
@@ -318,7 +319,7 @@ export function useCases(): CasesContextValue {
   return ctx
 }
 
-export function useCatalog(type: 'origen' | 'responsable' | 'estado'): CatalogItem[] {
+export function useCatalog(type: CatalogType): CatalogItem[] {
   const { catalogs } = useCases()
   return useMemo(
     () => catalogs.filter((c) => c.type === type && c.active).sort((a, b) => a.order - b.order),

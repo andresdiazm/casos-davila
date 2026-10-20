@@ -21,6 +21,7 @@ export const emptyDraft: CaseDraft = {
   tipoPaciente: '',
   cama: '',
   diagnosticoPrincipal: '',
+  servicioInvolucrado: '',
   origen: '',
   fechaInicio: todayISO(),
   estado: 'ingresado',
@@ -53,6 +54,7 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
 
   const origenes = useCatalog('origen')
   const responsables = useCatalog('responsable')
+  const servicios = useCatalog('servicio')
 
   function set<K extends keyof CaseDraft>(key: K, value: CaseDraft[K]) {
     setDraft((prev) => {
@@ -161,6 +163,21 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
             onChange={(e) => set('diagnosticoPrincipal', e.target.value)}
             placeholder="Ej: Neumonía adquirida en la comunidad"
           />
+        </FieldWrapper>
+
+        <FieldWrapper label="Servicio involucrado" htmlFor="servicioInvolucrado" hint="Opcional">
+          <SelectInput
+            id="servicioInvolucrado"
+            value={draft.servicioInvolucrado}
+            onChange={(e) => set('servicioInvolucrado', e.target.value)}
+          >
+            <option value="">Seleccione...</option>
+            {servicios.map((s) => (
+              <option key={s.id} value={s.label}>
+                {s.label}
+              </option>
+            ))}
+          </SelectInput>
         </FieldWrapper>
 
         <FieldWrapper label="Origen del caso" htmlFor="origen" required error={errors.origen}>

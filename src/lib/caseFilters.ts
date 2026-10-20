@@ -4,6 +4,7 @@ import { getSeguimientoInfo } from '@/lib/tracking'
 export interface CaseFilters {
   search: string
   origen: string
+  servicio: string
   estado: string
   responsable: string
   brecha: string
@@ -16,6 +17,7 @@ export interface CaseFilters {
 export const defaultFilters: CaseFilters = {
   search: '',
   origen: '',
+  servicio: '',
   estado: '',
   responsable: '',
   brecha: '',
@@ -53,6 +55,7 @@ export function applyFilters(cases: CaseRecord[], filters: CaseFilters): CaseRec
       if (!haystack.includes(search)) return false
     }
     if (filters.origen && c.origen !== filters.origen) return false
+    if (filters.servicio && c.servicioInvolucrado !== filters.servicio) return false
     if (filters.estado && c.estado !== filters.estado) return false
     if (filters.responsable && c.responsable !== filters.responsable) return false
     if (filters.brecha && c.brecha !== filters.brecha) return false
