@@ -29,6 +29,7 @@ import { ChartCard } from '@/components/dashboard/ChartCard'
 import { estadoLabel } from '@/components/cases/caseBadges'
 import { getSeguimientoInfo } from '@/lib/tracking'
 import { monthKey, monthLabel } from '@/lib/dates'
+import { formatCLP, formatCLPCompact } from '@/lib/currency'
 
 const CHART_COLORS = ['#174A5B', '#16A5A5', '#E7A33E', '#8894A0', '#5B8A99', '#D9534F']
 
@@ -80,6 +81,31 @@ export function Dashboard() {
     cases.reduce<Record<string, number>>((acc, c) => {
       const key = monthKey(c.fechaInicio)
       acc[key] = (acc[key] ?? 0) + 1
+      return acc
+    }, {}),
+  )
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => ({ name: monthLabel(key), value }))
+
+  const impactoFinancieroTotal = (c: (typeof cases)[number]) =>
+    c.impactoFinanciero.reduce((sum, i) => sum + (Number(i.monto) || 0), 0)
+
+  const impactoPorServicio = Object.entries(
+    cases.reduce<Record<string, number>>((acc, c) => {
+      const total = impactoFinancieroTotal(c)
+      if (total === 0) return acc
+      const servicio = c.servicioInvolucrado || 'Sin especificar'
+      acc[servicio] = (acc[servicio] ?? 0) + total
+      return acc
+    }, {}),
+  ).map(([name, value]) => ({ name, value }))
+
+  const impactoPorMes = Object.entries(
+    cases.reduce<Record<string, number>>((acc, c) => {
+      const total = impactoFinancieroTotal(c)
+      if (total === 0) return acc
+      const key = monthKey(c.fechaInicio)
+      acc[key] = (acc[key] ?? 0) + total
       return acc
     }, {}),
   )
@@ -160,6 +186,42 @@ export function Dashboard() {
                 <Line type="monotone" dataKey="value" stroke="var(--color-ambar)" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="Impacto financiero por servicio">
+            {impactoPorServicio.length === 0 ? (
+              <p className="flex h-full items-center justify-center text-center text-sm text-slate-400">
+                Sin datos de impacto financiero registrados.
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={impactoPorServicio}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis tickFormatter={formatCLPCompact} width={60} tick={{ fontSize: 11 }} />
+                  <Tooltip formatter={(value) => formatCLP(String(value))} />
+                  <Bar dataKey="value" fill="var(--color-alerta)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+
+          <ChartCard title="Impacto financiero por fecha de inicio">
+            {impactoPorMes.length === 0 ? (
+              <p className="flex h-full items-center justify-center text-center text-sm text-slate-400">
+                Sin datos de impacto financiero registrados.
+              </p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={impactoPorMes}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis tickFormatter={formatCLPCompact} width={60} tick={{ fontSize: 11 }} />
+                  <Tooltip formatter={(value) => formatCLP(String(value))} />
+                  <Bar dataKey="value" fill="var(--color-petroleo)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </ChartCard>
         </div>
       )}
