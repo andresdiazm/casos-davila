@@ -22,6 +22,7 @@ export const emptyDraft: CaseDraft = {
   cama: '',
   diagnosticoPrincipal: '',
   servicioInvolucrado: '',
+  idReclamoOrdinario: '',
   origen: '',
   fechaInicio: todayISO(),
   estado: 'ingresado',
@@ -178,6 +179,19 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
               </option>
             ))}
           </SelectInput>
+        </FieldWrapper>
+
+        <FieldWrapper
+          label="ID de reclamo / ordinario"
+          htmlFor="idReclamoOrdinario"
+          hint="Opcional, número de reclamo u oficio ordinario asociado"
+        >
+          <TextInput
+            id="idReclamoOrdinario"
+            value={draft.idReclamoOrdinario}
+            onChange={(e) => set('idReclamoOrdinario', e.target.value)}
+            placeholder="Ej: REC-2026-0145"
+          />
         </FieldWrapper>
 
         <FieldWrapper label="Origen del caso" htmlFor="origen" required error={errors.origen}>

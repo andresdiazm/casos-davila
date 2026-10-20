@@ -44,6 +44,7 @@ export interface CaseRecord {
   cama: string
   diagnosticoPrincipal: string
   servicioInvolucrado: string
+  idReclamoOrdinario: string
   origen: string
   fechaInicio: string
   estado: EstadoCasoId

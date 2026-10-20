@@ -101,6 +101,7 @@ export async function seedDemoData(): Promise<number> {
       cama,
       diagnosticoPrincipal: DIAGNOSTICOS[i % DIAGNOSTICOS.length],
       servicioInvolucrado: SERVICIOS[i % SERVICIOS.length],
+      idReclamoOrdinario: implicaMonto ? `REC-2026-${String(100 + i).padStart(4, '0')}` : '',
       origen,
       fechaInicio: isoDaysAgo(diasInicio),
       estado,

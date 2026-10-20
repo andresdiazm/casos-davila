@@ -74,6 +74,7 @@ export function CaseDetail() {
     cama: caso.cama,
     diagnosticoPrincipal: caso.diagnosticoPrincipal,
     servicioInvolucrado: caso.servicioInvolucrado,
+    idReclamoOrdinario: caso.idReclamoOrdinario,
     origen: caso.origen,
     fechaInicio: caso.fechaInicio,
     estado: caso.estado,
@@ -146,6 +147,7 @@ export function CaseDetail() {
           </Section>
 
           <Section title="2. Antecedentes y origen">
+            <DetailRow label="ID de reclamo / ordinario" value={caso.idReclamoOrdinario} />
             <DetailRow label="Origen del caso" value={caso.origen} />
             <DetailRow label="Fecha de inicio" value={formatDateDisplay(caso.fechaInicio)} />
           </Section>
