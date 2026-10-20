@@ -28,6 +28,13 @@ export interface Tarea {
   createdAt: string
 }
 
+export interface ImpactoFinancieroItem {
+  id: string
+  item: string
+  monto: string
+  createdAt: string
+}
+
 export interface CaseRecord {
   id: string
   caseNumber: string
@@ -51,6 +58,7 @@ export interface CaseRecord {
   resumenClinico: string
   observaciones: string
   tareas: Tarea[]
+  impactoFinanciero: ImpactoFinancieroItem[]
   deleted: boolean
   isDemo: boolean
   createdAt: string
@@ -60,10 +68,18 @@ export interface CaseRecord {
 
 export type CaseDraft = Omit<
   CaseRecord,
-  'id' | 'caseNumber' | 'deleted' | 'isDemo' | 'createdAt' | 'updatedAt' | 'history' | 'tareas'
+  | 'id'
+  | 'caseNumber'
+  | 'deleted'
+  | 'isDemo'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'history'
+  | 'tareas'
+  | 'impactoFinanciero'
 >
 
-export type CatalogType = 'origen' | 'responsable' | 'estado' | 'servicio'
+export type CatalogType = 'origen' | 'responsable' | 'estado' | 'servicio' | 'itemFinanciero'
 
 export interface CatalogItem {
   id: string

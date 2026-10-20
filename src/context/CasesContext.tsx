@@ -2,15 +2,18 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { ReactNode } from 'react'
 import { ensureCatalogsSeeded } from '@/lib/db'
 import {
+  addImpactoFinanciero as addImpactoFinancieroRepo,
   addTarea as addTareaRepo,
   createCase,
   deleteAllDemoCases,
+  deleteImpactoFinanciero as deleteImpactoFinancieroRepo,
   deleteTarea as deleteTareaRepo,
   getAllCases,
   restoreCase,
   softDeleteCase,
   toggleTarea as toggleTareaRepo,
   updateCase,
+  type ImpactoFinancieroInput,
   type TareaInput,
 } from '@/lib/casesRepo'
 import { getCatalog } from '@/lib/catalogRepo'
@@ -54,6 +57,8 @@ interface CasesContextValue {
   addTarea: (caseId: string, input: TareaInput) => Promise<void>
   toggleTarea: (caseId: string, tareaId: string) => Promise<void>
   removeTarea: (caseId: string, tareaId: string) => Promise<void>
+  addImpactoFinanciero: (caseId: string, input: ImpactoFinancieroInput) => Promise<void>
+  removeImpactoFinanciero: (caseId: string, itemId: string) => Promise<void>
   backupFolder: BackupFolderState
   connectBackupFolder: () => Promise<void>
   disconnectBackupFolder: () => Promise<void>
@@ -76,15 +81,16 @@ export function CasesProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false)
 
   const refresh = useCallback(async () => {
-    const [allCases, origenes, responsables, estados, servicios] = await Promise.all([
+    const [allCases, origenes, responsables, estados, servicios, itemsFinancieros] = await Promise.all([
       getAllCases(),
       getCatalog('origen'),
       getCatalog('responsable'),
       getCatalog('estado'),
       getCatalog('servicio'),
+      getCatalog('itemFinanciero'),
     ])
     setCases(allCases)
-    setCatalogs([...origenes, ...responsables, ...estados, ...servicios])
+    setCatalogs([...origenes, ...responsables, ...estados, ...servicios, ...itemsFinancieros])
     if (backupHandle && autoSyncEnabled && backupPermission === 'granted') {
       scheduleAutoSync(backupHandle, () =>
         notify('error', 'No se pudo sincronizar el respaldo en la carpeta local.'),
@@ -249,6 +255,22 @@ export function CasesProvider({ children }: { children: ReactNode }) {
     [refresh],
   )
 
+  const addImpactoFinanciero = useCallback(
+    async (caseId: string, input: ImpactoFinancieroInput) => {
+      await addImpactoFinancieroRepo(caseId, input)
+      await refresh()
+    },
+    [refresh],
+  )
+
+  const removeImpactoFinanciero = useCallback(
+    async (caseId: string, itemId: string) => {
+      await deleteImpactoFinancieroRepo(caseId, itemId)
+      await refresh()
+    },
+    [refresh],
+  )
+
   const hasDemoData = useMemo(() => cases.some((c) => c.isDemo), [cases])
 
   const backupFolder = useMemo<BackupFolderState>(
@@ -279,6 +301,8 @@ export function CasesProvider({ children }: { children: ReactNode }) {
       addTarea,
       toggleTarea,
       removeTarea,
+      addImpactoFinanciero,
+      removeImpactoFinanciero,
       backupFolder,
       connectBackupFolder,
       disconnectBackupFolder,
@@ -301,6 +325,8 @@ export function CasesProvider({ children }: { children: ReactNode }) {
       addTarea,
       toggleTarea,
       removeTarea,
+      addImpactoFinanciero,
+      removeImpactoFinanciero,
       backupFolder,
       connectBackupFolder,
       disconnectBackupFolder,

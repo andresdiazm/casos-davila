@@ -106,6 +106,7 @@ export function Settings() {
   const origenes = catalogs.filter((c) => c.type === 'origen')
   const responsables = catalogs.filter((c) => c.type === 'responsable')
   const servicios = catalogs.filter((c) => c.type === 'servicio')
+  const itemsFinancieros = catalogs.filter((c) => c.type === 'itemFinanciero')
 
   return (
     <div className="flex flex-col gap-4">
@@ -129,6 +130,13 @@ export function Settings() {
           description="Servicios o unidades clínicas disponibles al registrar un caso."
           type="servicio"
           items={servicios}
+          onChanged={refresh}
+        />
+        <CatalogManager
+          title="Impacto financiero"
+          description="Ítems disponibles para registrar el impacto financiero de un caso (ej. daño moral, copago)."
+          type="itemFinanciero"
+          items={itemsFinancieros}
           onChanged={refresh}
         />
       </div>

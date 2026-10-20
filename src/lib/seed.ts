@@ -1,4 +1,4 @@
-import { addTarea, createCase } from '@/lib/casesRepo'
+import { addImpactoFinanciero, addTarea, createCase } from '@/lib/casesRepo'
 import { db } from '@/lib/db'
 import { formatearRut } from '@/lib/rut'
 import type { Brecha, CaseDraft, EstadoCasoId, TipoPaciente } from '@/types/case'
@@ -131,6 +131,13 @@ export async function seedDemoData(): Promise<number> {
         responsable: RESPONSABLES[i % RESPONSABLES.length],
         fechaLimite: isoDaysAgo((i % 6) - 2),
       })
+    }
+
+    if (implicaMonto) {
+      await addImpactoFinanciero(record.id, { item: 'Daño moral', monto: String(300000 + (i % 6) * 150000) })
+      if (i % 2 === 0) {
+        await addImpactoFinanciero(record.id, { item: 'Copago', monto: '0' })
+      }
     }
 
     created++

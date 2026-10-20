@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { nowISO } from '@/lib/dates'
-import type { CaseDraft, CaseRecord, HistoryEntry, Tarea } from '@/types/case'
+import type { CaseDraft, CaseRecord, HistoryEntry, ImpactoFinancieroItem, Tarea } from '@/types/case'
 
 function uuid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
@@ -29,7 +29,7 @@ const FIELD_LABELS: Record<string, string> = {
   observaciones: 'Observaciones',
 }
 
-/** Normaliza registros creados antes de incorporar resumen clínico, observaciones, tareas, montos, tipo de paciente, descripción de brecha y servicio involucrado. */
+/** Normaliza registros creados antes de incorporar resumen clínico, observaciones, tareas, montos, tipo de paciente, descripción de brecha, servicio involucrado e impacto financiero. */
 function normalizeCase(record: CaseRecord): CaseRecord {
   return {
     ...record,
@@ -43,6 +43,7 @@ function normalizeCase(record: CaseRecord): CaseRecord {
     descripcionBrecha: record.descripcionBrecha ?? '',
     servicioInvolucrado: record.servicioInvolucrado ?? '',
     tareas: record.tareas ?? [],
+    impactoFinanciero: record.impactoFinanciero ?? [],
   }
 }
 
@@ -86,6 +87,7 @@ export async function createCase(draft: CaseDraft): Promise<CaseRecord> {
     id: uuid(),
     caseNumber,
     tareas: [],
+    impactoFinanciero: [],
     deleted: false,
     isDemo: false,
     createdAt: now,
@@ -269,6 +271,71 @@ export async function deleteTarea(caseId: string, tareaId: string): Promise<Case
         valorAnterior: tarea?.descripcion ?? '—',
         valorNuevo: '—',
         descripcion: 'Tarea eliminada',
+      },
+    ],
+  }
+  await db.cases.put(updated)
+  return updated
+}
+
+export interface ImpactoFinancieroInput {
+  item: string
+  monto: string
+}
+
+export async function addImpactoFinanciero(
+  caseId: string,
+  input: ImpactoFinancieroInput,
+): Promise<CaseRecord> {
+  const raw = await db.cases.get(caseId)
+  if (!raw) throw new Error('Caso no encontrado')
+  const current = normalizeCase(raw)
+  const now = nowISO()
+  const entry: ImpactoFinancieroItem = {
+    id: uuid(),
+    item: input.item,
+    monto: input.monto,
+    createdAt: now,
+  }
+  const updated: CaseRecord = {
+    ...current,
+    impactoFinanciero: [...current.impactoFinanciero, entry],
+    updatedAt: now,
+    history: [
+      ...current.history,
+      {
+        id: uuid(),
+        timestamp: now,
+        campo: 'Impacto financiero',
+        valorAnterior: '—',
+        valorNuevo: `${entry.item}: ${entry.monto}`,
+        descripcion: 'Ítem de impacto financiero agregado',
+      },
+    ],
+  }
+  await db.cases.put(updated)
+  return updated
+}
+
+export async function deleteImpactoFinanciero(caseId: string, itemId: string): Promise<CaseRecord> {
+  const raw = await db.cases.get(caseId)
+  if (!raw) throw new Error('Caso no encontrado')
+  const current = normalizeCase(raw)
+  const entry = current.impactoFinanciero.find((i) => i.id === itemId)
+  const now = nowISO()
+  const updated: CaseRecord = {
+    ...current,
+    impactoFinanciero: current.impactoFinanciero.filter((i) => i.id !== itemId),
+    updatedAt: now,
+    history: [
+      ...current.history,
+      {
+        id: uuid(),
+        timestamp: now,
+        campo: 'Impacto financiero',
+        valorAnterior: entry ? `${entry.item}: ${entry.monto}` : '—',
+        valorNuevo: '—',
+        descripcion: 'Ítem de impacto financiero eliminado',
       },
     ],
   }

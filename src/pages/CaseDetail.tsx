@@ -6,6 +6,7 @@ import { useToast } from '@/context/ToastContext'
 import { CaseForm } from '@/components/cases/CaseForm'
 import { DetailRow, Section } from '@/components/cases/DetailRow'
 import { TareasSection } from '@/components/cases/TareasSection'
+import { ImpactoFinancieroSection } from '@/components/cases/ImpactoFinancieroSection'
 import { EstadoBadge, BrechaBadge, SeguimientoBadges, tipoPacienteLabel } from '@/components/cases/caseBadges'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -227,6 +228,12 @@ export function CaseDetail() {
               </ol>
             )}
           </section>
+
+          <ImpactoFinancieroSection
+            title="10. Impacto financiero"
+            caseId={caso.id}
+            items={caso.impactoFinanciero}
+          />
         </div>
       )}
 

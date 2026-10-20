@@ -26,6 +26,8 @@ const RESPONSABLES_BASE = ['Calidad y Seguridad del Paciente', 'Subdirección M�
 
 const SERVICIOS_BASE = ['Urgencia', 'Pabellón', 'Maternidad', 'UPC']
 
+const ITEMS_FINANCIEROS_BASE = ['Daño moral', 'Copago']
+
 export interface StoredHandle {
   key: string
   handle: FileSystemDirectoryHandle
@@ -97,6 +99,16 @@ export function ensureCatalogsSeeded(): Promise<void> {
         SERVICIOS_BASE.map((label, idx) => ({
           id: `servicio_${idx}`,
           type: 'servicio',
+          label,
+          active: true,
+          order: idx,
+          builtIn: false,
+        })),
+      )
+      await seedCatalogTypeIfEmpty(
+        ITEMS_FINANCIEROS_BASE.map((label, idx) => ({
+          id: `itemFinanciero_${idx}`,
+          type: 'itemFinanciero',
           label,
           active: true,
           order: idx,
