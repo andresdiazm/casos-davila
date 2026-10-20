@@ -31,6 +31,7 @@ export const emptyDraft: CaseDraft = {
   planMejora: '',
   fechaRevision: '',
   fechaPlanMejora: '',
+  fechaPresentacionComite: '',
   montoSolicitado: '',
   montoAcordado: '',
   responsable: '',
@@ -295,6 +296,15 @@ export function CaseForm({ initial, submitLabel, onSubmit, onCancel, showCancelA
               type="date"
               value={draft.fechaRevision}
               onChange={(e) => set('fechaRevision', e.target.value)}
+            />
+          </FieldWrapper>
+
+          <FieldWrapper label="Fecha de presentación en comité" htmlFor="fechaPresentacionComite" hint="Opcional">
+            <TextInput
+              id="fechaPresentacionComite"
+              type="date"
+              value={draft.fechaPresentacionComite}
+              onChange={(e) => set('fechaPresentacionComite', e.target.value)}
             />
           </FieldWrapper>
 

@@ -83,6 +83,7 @@ export function CaseDetail() {
     planMejora: caso.planMejora,
     fechaRevision: caso.fechaRevision,
     fechaPlanMejora: caso.fechaPlanMejora,
+    fechaPresentacionComite: caso.fechaPresentacionComite,
     montoSolicitado: caso.montoSolicitado,
     montoAcordado: caso.montoAcordado,
     responsable: caso.responsable,
@@ -160,6 +161,10 @@ export function CaseDetail() {
           <Section title="4. Evaluación de brecha">
             <DetailRow label="Brecha identificada" value={<BrechaBadge brecha={caso.brecha} />} />
             <DetailRow label="Fecha de revisión" value={formatDateDisplay(caso.fechaRevision)} />
+            <DetailRow
+              label="Fecha de presentación en comité"
+              value={formatDateDisplay(caso.fechaPresentacionComite)}
+            />
             <DetailRow label="Monto solicitado" value={formatCLP(caso.montoSolicitado)} />
             <DetailRow label="Monto acordado" value={formatCLP(caso.montoAcordado)} />
             {caso.brecha === 'si' && (

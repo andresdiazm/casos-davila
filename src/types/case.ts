@@ -53,6 +53,7 @@ export interface CaseRecord {
   planMejora: string
   fechaRevision: string
   fechaPlanMejora: string
+  fechaPresentacionComite: string
   montoSolicitado: string
   montoAcordado: string
   responsable: string
