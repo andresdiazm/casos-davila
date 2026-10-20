@@ -8,6 +8,21 @@
   --color-alerta: #d9534f;
   --color-ambar: #e7a33e;
   --font-sans: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Escala tipográfica reducida respecto al default de Tailwind, para maximizar
+     la cantidad de información visible en pantalla sin recortar legibilidad. */
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1.3;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.3;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.4;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.35;
+  --text-xl: 1.125rem;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.375rem;
+  --text-2xl--line-height: 1.25;
 }
 
 html,
